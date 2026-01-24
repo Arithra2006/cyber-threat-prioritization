@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  threat-dashboard:
+    build: .
+    container_name: cyber-threat-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+      # Mount logs directory
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a service to run the ML pipeline
+  threat-pipeline:
+    build: .
+    container_name: cyber-threat-pipeline
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python -m src.ml_pipeline.pipeline
+    profiles:
+      - pipeline  # Only run when explicitly requested
