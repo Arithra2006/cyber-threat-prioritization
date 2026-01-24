@@ -1,12 +1,17 @@
 # 🛡️ AI-Powered Cyber Threat Prioritization System
 
-[![Tests](https://github.com/yourusername/cyber-threat-prioritization/actions/workflows/tests.yml/badge.svg)](https://github.com/yourusername/cyber-threat-prioritization/actions/workflows/tests.yml)
+[![Tests](https://github.com/Arithra2006/cyber-threat-prioritization/actions/workflows/tests.yml/badge.svg)](https://github.com/Arithra2006/cyber-threat-prioritization/actions/workflows/tests.yml)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An ML-powered threat intelligence system that helps Security Operations Center (SOC) analysts prioritize cyber threats by ranking them based on similarity to verified critical incidents, MITRE ATT&CK keyword matching, and novelty detection.
 
-![Dashboard Screenshot](C:\Users\Arithra Mayur\CYBER PROJECT\cyber-threat-prioritization\screenshots)
+![Dashboard 1 Screenshot](screenshots/dashboard-main-1.png)
+![Dashboard 2 Screenshot](screenshots/dashboard-main-2.png)
+![Analytics Screenshot](screenshots/analytics.png)
+![Analytics Screenshot](screenshots/analytics-2.png)
+![metrics Screenshot](screenshots/metrics-tab.png)
+![threat-details Screenshot](screenshots/threat-detail.png)
 
 ## 🎯 Key Features
 
@@ -35,7 +40,7 @@ An ML-powered threat intelligence system that helps Security Operations Center (
 
 bash
 # Clone repository
-git clone https://github.com/yourusername/cyber-threat-prioritization.git
+git clone https://github.com/Arithra2006/cyber-threat-prioritization.git
 cd cyber-threat-prioritization
 
 # Run with Docker Compose
@@ -203,8 +208,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 📧 Contact
 
-*Your Name* - [your.email@example.com](mailto:your.email@example.com)
+*Arithra Mayur* - [arithramayur@gmail.com](mailto:arithramayur@gmail.com)
 
-Project Link: [https://github.com/yourusername/cyber-threat-prioritization](https://github.com/yourusername/cyber-threat-prioritization)
+Project Link: [https://github.com/Arithra2006/cyber-threat-prioritization]
 
 ---
