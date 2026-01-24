@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Arithra2006/cyber-threat-prioritization/actions/workflows/tests.yml/badge.svg)](https://github.com/Arithra2006/cyber-threat-prioritization/actions/workflows/tests.yml)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 An ML-powered threat intelligence system that helps Security Operations Center (SOC) analysts prioritize cyber threats by ranking them based on similarity to verified critical incidents, MITRE ATT&CK keyword matching, and novelty detection.
 
@@ -197,7 +197,6 @@ pytest tests/test_risk_scoring.py -v
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
