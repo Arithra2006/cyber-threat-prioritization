@@ -72,9 +72,11 @@ python -m src.ml_pipeline.pipeline
 # Launch dashboard
 streamlit run src/dashboard/app.py
 
+# View MLflow experiments (optional)
+mlflow ui
+# Then open http://localhost:5000
 
 ## 📁 Project Structure
-
 
 cyber-threat-prioritization/
 ├── src/
@@ -85,10 +87,12 @@ cyber-threat-prioritization/
 ├── data/
 │   ├── raw/                    # Raw threat data
 │   └── processed/              # Scored threats, models
+├── mlruns/                     # MLflow experiment tracking
 ├── docker-compose.yml          # Container orchestration
 ├── Dockerfile                  # Container image
 ├── requirements.txt            # Python dependencies
 └── README.md
+
 
 
 ## 🔬 How It Works
@@ -120,6 +124,12 @@ Risk Score = 0.50 × Similarity + 0.40 × Keywords + 0.10 × Novelty
 - *Similarity (50%)*: Cosine similarity to 12 verified CISA critical incidents
 - *Keywords (40%)*: MITRE ATT&CK technique matching
 - *Novelty (10%)*: Distance from cluster centroids
+
+-MLflow Tracking
+-Logs all pipeline parameters (model configs, thresholds)
+-Tracks 20+ metrics (accuracy, deduplication rate, cluster stats)
+-Stores artifacts (models, reports, scored threats)
+-Enables experiment comparison and reproducibility
 
 ### 3. Interactive Dashboard
 
@@ -167,10 +177,10 @@ pytest tests/test_risk_scoring.py -v
 
 - *ML/AI*: SentenceTransformers, scikit-learn, NumPy, pandas
 - *Dashboard*: Streamlit, Plotly
+- *MLOPS*:MLflow(experiment tracking),structlog(logging)
 - *Data Sources*: AlienVault OTX, MITRE ATT&CK, CISA Advisories
 - *Infrastructure*: Docker, Docker Compose
 - *Testing*: pytest, GitHub Actions
-- *Logging*: structlog
 
 ## 🎓 Use Cases
 
@@ -194,9 +204,6 @@ pytest tests/test_risk_scoring.py -v
 - [ ] Multi-model ensemble (combine multiple embeddings)
 - [ ] Temporal pattern detection (trend analysis)
 - [ ] Custom MITRE ATT&CK mappings per organization
-
-## 📄 License
-
 
 ## 🙏 Acknowledgments
 

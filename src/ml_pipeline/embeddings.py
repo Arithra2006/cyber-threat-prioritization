@@ -25,6 +25,8 @@ class ThreatEmbedder:
         """
         if model_name is None:
             model_name = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
+        # Save model_name as instance variable 
+        self.model_name = model_name
         
         logger.info("Loading embedding model", model=model_name)
         print(f"📥 Loading embedding model: {model_name}")
