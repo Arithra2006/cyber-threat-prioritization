@@ -18,6 +18,8 @@ An ML-powered threat intelligence system that helps Security Operations Center (
 - *Intelligent Threat Ranking*: Scores threats based on similarity to CISA critical incidents, MITRE ATT&CK patterns, and novelty
 - *Pattern Detection*: Unsupervised clustering identifies 10 distinct attack patterns
 - *Real-time Dashboard*: Interactive Streamlit interface for threat analysis
+- *MLflow Experiment Tracking*: Comprehensive metrics logging and experiment management
+- *Structured Logging*: Professional logging with structlog for production monitoring
 - *Production-Ready*: Docker containerization, CI/CD pipeline, comprehensive testing
 - *Explainable AI*: Transparent risk scoring with component breakdowns
 
@@ -125,11 +127,12 @@ Risk Score = 0.50 × Similarity + 0.40 × Keywords + 0.10 × Novelty
 - *Keywords (40%)*: MITRE ATT&CK technique matching
 - *Novelty (10%)*: Distance from cluster centroids
 
--MLflow Tracking
--Logs all pipeline parameters (model configs, thresholds)
--Tracks 20+ metrics (accuracy, deduplication rate, cluster stats)
--Stores artifacts (models, reports, scored threats)
--Enables experiment comparison and reproducibility
+*MLflow Tracking*
+
+- Logs all pipeline parameters (model configs, thresholds)
+- Tracks 20+ metrics (accuracy, deduplication rate, cluster stats)
+- Stores artifacts (models, reports, scored threats)
+- Enables experiment comparison and reproducibility
 
 ### 3. Interactive Dashboard
 
@@ -177,7 +180,7 @@ pytest tests/test_risk_scoring.py -v
 
 - *ML/AI*: SentenceTransformers, scikit-learn, NumPy, pandas
 - *Dashboard*: Streamlit, Plotly
-- *MLOPS*:MLflow(experiment tracking),structlog(logging)
+- *MLOPS*: MLflow(experiment tracking),structlog(logging)
 - *Data Sources*: AlienVault OTX, MITRE ATT&CK, CISA Advisories
 - *Infrastructure*: Docker, Docker Compose
 - *Testing*: pytest, GitHub Actions
