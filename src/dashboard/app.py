@@ -516,7 +516,6 @@ with tab5:
     
     ### Limitations
     - Static dataset (snapshot from OTX, not live feed)
-    - Equal weight assumption (not optimized for specific environments)
     - Small ground truth (12 CISA incidents)
     - No temporal drift modeling
     
