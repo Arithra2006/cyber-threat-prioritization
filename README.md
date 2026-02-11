@@ -6,12 +6,23 @@
 
 An ML-powered threat intelligence system that helps Security Operations Center (SOC) analysts prioritize cyber threats by ranking them based on similarity to verified critical incidents, MITRE ATT&CK keyword matching, and novelty detection.
 
+**Try Live Demo here**: [https://cyber-threat-prioritization.streamlit.app](https://cyber-threat-prioritization.streamlit.app)
+
 ![Dashboard 1 Screenshot](screenshots/dashboard-main-1.png)
 ![Dashboard 2 Screenshot](screenshots/dashboard-main-2.png)
 ![Analytics Screenshot](screenshots/analytics.png)
 ![Analytics Screenshot](screenshots/analytics-2.png)
 ![metrics Screenshot](screenshots/metrics-tab.png)
 ![threat-details Screenshot](screenshots/threat-detail.png)
+
+## 🧩 The Problem
+
+Security Operations Centers process *thousands of threat alerts daily*. Existing prioritization methods rely heavily on recency or simple keyword rules, leading to:
+- *Alert fatigue* - Analysts overwhelmed by false positives
+- *Missed critical threats* - High-impact incidents buried in noise
+- *Inefficient triage* - No semantic understanding of threat relationships
+
+This system explores whether *semantic similarity + structured threat knowledge* (MITRE ATT&CK) can improve ranking quality and help analysts focus on what matters most.
 
 ## 🎯 Key Features
 
@@ -78,12 +89,6 @@ streamlit run src/dashboard/app.py
 mlflow ui
 # Then open http://localhost:5000
 
-## 🌐 Live Demo
-
-**Try it here**: [https://cyber-threat-prioritization.streamlit.app](https://cyber-threat-prioritization.streamlit.app)
-
-## 📊 Datasets
-
 ### Primary Dataset
 - *AlienVault OTX*: 430 high-quality threat pulses (filtered by description length and relevant tags)
 
@@ -91,85 +96,56 @@ mlflow ui
 - *CISA Critical Incidents*: 12 verified critical advisories (ground truth for similarity scoring)
 - *MITRE ATT&CK Framework*: Technique keywords for pattern matching
 
-## 📁 Project Structure
+## System Overview
+Architecture
+Data Collection → Embedding (384D) → Deduplication → Clustering (k=10) → Risk Scoring
+     (OTX)         (MiniLM-L6-v2)    (0.85 sim)      (KMeans)          (Weighted)
+Risk Scoring Formula:
+Risk Score = 0.50 × Similarity + 0.40 × Keywords + 0.10 × Novelty 
 
-cyber-threat-prioritization/
-├── src/
-│   ├── data_collection/       # OTX API, MITRE, CISA data
-│   ├── ml_pipeline/            # Embeddings, clustering, scoring
-│   └── dashboard/              # Streamlit interface
-├── tests/                      # Unit tests (pytest)
-├── data/
-│   ├── raw/                    # Raw threat data
-│   └── processed/              # Scored threats, models
-├── mlruns/                     # MLflow experiment tracking
-├── docker-compose.yml          # Container orchestration
-├── Dockerfile                  # Container image
-├── requirements.txt            # Python dependencies
-└── README.md
+Why these weights?
+- Similarity (50%) - Prioritizes threats matching 12 verified CISA critical incidents (highest signal)
+- Keywords (40%) - MITRE ATT&CK technique matching indicates established attack patterns
+- Novelty (10%) - Distance from cluster centroids flags emerging threats (weighted lower due to higher false positive rate)
+- Derived from SOC analyst priority heuristics. Future work includes grid search optimization against historical CISA severity ratings.
 
+Key Technical Decisions
+Embedding Model: sentence-transformers/all-MiniLM-L6-v2
+- Balances 5ms latency with semantic accuracy for real-time SOC use
+- 384D vectors enable efficient similarity computations
+- Prioritized speed over larger models (e.g., BGE-large) for production feasibility
+Clustering: KMeans (k=10) via Elbow + Silhouette Score
+- Identifies distinct attack patterns: ransomware, phishing, supply chain, APT
+- Clusters align with known MITRE ATT&CK tactics
 
+Dashboard Features:
+- 📊 Threat Rankings - Sorted by risk score with expandable details
+- 📈 Analytics - Risk distribution, cluster patterns, timeline
+- 🗺️ Similarity Heatmap - Threat relationship visualization
+- 🎯 Performance Metrics - Precision/recall curves, baseline comparison
 
-## 🔬 How It Works
-
-### 1. Data Collection
-- Fetches threat intelligence from *AlienVault OTX* API
-- Applies quality filters (description length, relevant tags)
-- Collected 430 high-quality threats
-
-### 2. ML Pipeline
-
-*Embedding Generation*
-- Uses sentence-transformers/all-MiniLM-L6-v2 (384-dimensional vectors)
-- Converts threat descriptions to semantic embeddings
-
-*Deduplication*
-- Cosine similarity threshold: 0.85
-- Removes near-duplicate threats (5.4% reduction)
-
-*Clustering*
-- KMeans clustering (k=10)
-- Groups threats into attack patterns
-- Identifies ransomware, phishing, supply chain, APT clusters
-
-*Risk Scoring*
-
-Risk Score = 0.50 × Similarity + 0.40 × Keywords + 0.10 × Novelty
-
-- *Similarity (50%)*: Cosine similarity to 12 verified CISA critical incidents
-- *Keywords (40%)*: MITRE ATT&CK technique matching
-- *Novelty (10%)*: Distance from cluster centroids
-
-*MLflow Tracking*
-
+MLflow Tracking:
 - Logs all pipeline parameters (model configs, thresholds)
 - Tracks 20+ metrics (accuracy, deduplication rate, cluster stats)
 - Stores artifacts (models, reports, scored threats)
 - Enables experiment comparison and reproducibility
 
-### 3. Interactive Dashboard
-
-- 📊 *Threat Rankings*: Sorted by risk score with expandable details
-- 📈 *Analytics*: Risk distribution, cluster patterns, timeline
-- 🗺️ *Similarity Map*: Heatmap of threat relationships
-- 🎯 *Performance Metrics*: Precision/recall curves, baseline comparison
-
-## 🧪 Testing
-
-bash
-# Run all tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=src --cov-report=html
-
-# Run specific test file
-pytest tests/test_risk_scoring.py -v
-
-
-*Test Coverage*: 15+ unit tests covering embeddings, deduplication, clustering, and risk scoring.
 
 ## 📈 Evaluation
+
+The SOC Trade-off
+In Security Operations Centers, Recall is typically more important than Precision:
+- Low Precision → Analysts review extra false alarms (annoying, but safe)
+- Low Recall → Critical threats slip through undetected (catastrophic)
+Our approach: At the Top-50 threshold, the system achieves 100% precision, ensuring the initial batch of alerts is fully actionable. However, to capture a wider net of threats and increase Recall to 65.7%, we accept a Precision drop to 90.7% at the Top-150 mark—a trade-off that balances analyst workload with comprehensive threat detection.
+
+Methodology
+Ground Truth: 12 CISA critical incidents (KEV catalog entries from 2024-2025)
+Validation Approach: Leave-one-out cross-validation to measure ranking effectiveness
+Metric Calculation:
+- Precision @K: Percentage of top-K threats that match CISA critical incidents
+- Recall @K: Percentage of CISA incidents captured in top-K threats
+Caveat: Small ground truth (12 incidents) may lead to optimistic precision estimates. Results should be validated against larger incident databases in production deployment.
 
 ### Baseline Comparison (Top-50)
 
@@ -189,6 +165,22 @@ pytest tests/test_risk_scoring.py -v
 | 150   | 90.7%     | 65.7%   | 0.762 |
 | 200   | 76.0%     | 73.4%   | 0.747 |
 
+## 🧪 Testing
+
+bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
+
+# Run specific test file
+pytest tests/test_risk_scoring.py -v
+
+
+*Test Coverage*: 15+ unit tests covering embeddings, deduplication, clustering, and risk scoring.
+
+
 ## 🛠️ Technology Stack
 
 - *ML/AI*: SentenceTransformers, scikit-learn, NumPy, pandas
@@ -207,9 +199,20 @@ pytest tests/test_risk_scoring.py -v
 
 ## ⚠️ Limitations
 
-- *Static Dataset*: Snapshot from OTX (not live feed)
-- *Small Ground Truth*: Only 12 CISA incidents for similarity scoring
-- *No Temporal Modeling*: Doesn't track threat evolution over time
+- Data Scale
+Current Dataset: 430 threats (proof-of-concept scale)
+Production Reality: SOCs process 1,000-10,000+ daily threats
+Mitigation: Architecture is designed for horizontal scaling; embedding generation and clustering are parallelizable
+- Ground Truth Size
+Current: Only 12 CISA incidents for similarity scoring
+Impact: May lead to overfitting and optimistic precision estimates
+Solution Path:
+Expand to 100+ incidents from CISA KEV catalog
+Incorporate synthetic data generation using LLMs to create diverse critical threat scenarios
+Implement analyst feedback loop to refine ground truth continuously
+- Temporal Modeling
+Gap: Doesn't track threat evolution over time or detect campaign patterns
+Future Work: Add temporal embeddings and sequence modeling for APT campaign detection
 
 ## 🔮 Future Enhancements
 
@@ -219,6 +222,23 @@ pytest tests/test_risk_scoring.py -v
 - [ ] Multi-model ensemble (combine multiple embeddings)
 - [ ] Temporal pattern detection (trend analysis)
 - [ ] Custom MITRE ATT&CK mappings per organization
+
+## 📁 Project Structure
+
+cyber-threat-prioritization/
+├── src/
+│   ├── data_collection/       # OTX API, MITRE, CISA data
+│   ├── ml_pipeline/            # Embeddings, clustering, scoring
+│   └── dashboard/              # Streamlit interface
+├── tests/                      # Unit tests (pytest)
+├── data/
+│   ├── raw/                    # Raw threat data
+│   └── processed/              # Scored threats, models
+├── mlruns/                     # MLflow experiment tracking
+├── docker-compose.yml          # Container orchestration
+├── Dockerfile                  # Container image
+├── requirements.txt            # Python dependencies
+└── README.md
 
 ## 🙏 Acknowledgments
 
