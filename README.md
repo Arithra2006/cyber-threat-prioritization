@@ -51,7 +51,8 @@ This system explores whether *semantic similarity + structured threat knowledge*
 
 ### Using Docker (Recommended)
 
-bash
+Bash
+
 # Clone repository
 git clone https://github.com/Arithra2006/cyber-threat-prioritization.git
 cd cyber-threat-prioritization
@@ -89,10 +90,8 @@ streamlit run src/dashboard/app.py
 mlflow ui
 # Then open http://localhost:5000
 
-### Primary Dataset
+### Data Sources
 - *AlienVault OTX*: 430 high-quality threat pulses (filtered by description length and relevant tags)
-
-### Auxiliary Datasets
 - *CISA Critical Incidents*: 12 verified critical advisories (ground truth for similarity scoring)
 - *MITRE ATT&CK Framework*: Technique keywords for pattern matching
 
@@ -110,26 +109,19 @@ Why these weights?
 - Derived from SOC analyst priority heuristics. Future work includes grid search optimization against historical CISA severity ratings.
 
 Key Technical Decisions
-Embedding Model: sentence-transformers/all-MiniLM-L6-v2
-- Balances 5ms latency with semantic accuracy for real-time SOC use
-- 384D vectors enable efficient similarity computations
-- Prioritized speed over larger models (e.g., BGE-large) for production feasibility
-Clustering: KMeans (k=10) via Elbow + Silhouette Score
-- Identifies distinct attack patterns: ransomware, phishing, supply chain, APT
-- Clusters align with known MITRE ATT&CK tactics
+Embedding: all-MiniLM-L6-v2 (384D)
+- Optimized for low latency (~5ms) + strong semantic similarity
+- Chosen over larger models for production feasibility
+
+Clustering: KMeans (k=10)
+- Selected via Elbow + Silhouette
+- Identifies ransomware, phishing, APT clusters
 
 Dashboard Features:
 - 📊 Threat Rankings - Sorted by risk score with expandable details
 - 📈 Analytics - Risk distribution, cluster patterns, timeline
 - 🗺️ Similarity Heatmap - Threat relationship visualization
 - 🎯 Performance Metrics - Precision/recall curves, baseline comparison
-
-MLflow Tracking:
-- Logs all pipeline parameters (model configs, thresholds)
-- Tracks 20+ metrics (accuracy, deduplication rate, cluster stats)
-- Stores artifacts (models, reports, scored threats)
-- Enables experiment comparison and reproducibility
-
 
 ## 📈 Evaluation
 
@@ -156,7 +148,10 @@ Metric Calculation:
 | *Our System* | *24.2%* | *100%* |
 | *Improvement* | *+108%* | *+96%* |
 
-### Precision-Recall Trade-off
+<details>
+<summary><strong>Full Precision-Recall Breakdown</strong></summary>
+
+<br>
 
 | Top-K | Precision | Recall  | F1-Score |
 |-------|-----------|-------- |----------|
@@ -164,6 +159,8 @@ Metric Calculation:
 | 100   | 100.0%    | 48.3%   | 0.651 |
 | 150   | 90.7%     | 65.7%   | 0.762 |
 | 200   | 76.0%     | 73.4%   | 0.747 |
+
+</details>
 
 ## 🧪 Testing
 
@@ -185,7 +182,7 @@ pytest tests/test_risk_scoring.py -v
 
 - *ML/AI*: SentenceTransformers, scikit-learn, NumPy, pandas
 - *Dashboard*: Streamlit, Plotly
-- *MLOPS*: MLflow(experiment tracking),structlog(logging)
+- *MLOPS*: MLflow(20+ metrics logged,experiment tracking),structlog(logging)
 - *Data Sources*: AlienVault OTX, MITRE ATT&CK, CISA Advisories
 - *Infrastructure*: Docker, Docker Compose
 - *Testing*: pytest, GitHub Actions
@@ -199,29 +196,15 @@ pytest tests/test_risk_scoring.py -v
 
 ## ⚠️ Limitations
 
-- Data Scale
-Current Dataset: 430 threats (proof-of-concept scale)
-Production Reality: SOCs process 1,000-10,000+ daily threats
-Mitigation: Architecture is designed for horizontal scaling; embedding generation and clustering are parallelizable
-- Ground Truth Size
-Current: Only 12 CISA incidents for similarity scoring
-Impact: May lead to overfitting and optimistic precision estimates
-Solution Path:
-Expand to 100+ incidents from CISA KEV catalog
-Incorporate synthetic data generation using LLMs to create diverse critical threat scenarios
-Implement analyst feedback loop to refine ground truth continuously
-- Temporal Modeling
-Gap: Doesn't track threat evolution over time or detect campaign patterns
-Future Work: Add temporal embeddings and sequence modeling for APT campaign detection
+- **Scale**: 430 threats (PoC scale vs 1k–10k/day in production)
+- **Ground Truth**: 12 CISA incidents (risk of optimistic estimates)
+- **Temporal Modeling**: No campaign evolution tracking
 
-## 🔮 Future Enhancements
+## Planned Improvements: 
+- Expand KEV dataset (100+ incidents)
+- Analyst feedback loop
+- Temporal embeddings for campaign detection
 
-- [ ] Live threat feed integration
-- [ ] Analyst feedback loop for weight optimization
-- [ ] Expanded ground truth (100+ critical incidents)
-- [ ] Multi-model ensemble (combine multiple embeddings)
-- [ ] Temporal pattern detection (trend analysis)
-- [ ] Custom MITRE ATT&CK mappings per organization
 
 ## 📁 Project Structure
 
