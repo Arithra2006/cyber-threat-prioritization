@@ -137,7 +137,7 @@ The SOC Trade-off
 In Security Operations Centers, Recall is typically more important than Precision:
 - Low Precision → Analysts review extra false alarms (annoying, but safe)
 - Low Recall → Critical threats slip through undetected (catastrophic)
-Our approach: At the Top-50 threshold, the system achieves 100% precision, ensuring the initial batch of alerts is fully actionable. However, to capture a wider net of threats and increase Recall to 65.7%, we accept a Precision drop to 90.7% at the Top-150 mark—a trade-off that balances analyst workload with comprehensive threat detection.
+- Our approach: At the Top-50 threshold, the system achieves 100% precision, ensuring the initial batch of alerts is fully actionable. However, to capture a wider net of threats and increase Recall to 65.7%, we accept a Precision drop to 90.7% at the Top-150 mark—a trade-off that balances analyst workload with comprehensive threat detection.
 
 Methodology
 Ground Truth: 12 CISA critical incidents (KEV catalog entries from 2024-2025)
@@ -145,7 +145,7 @@ Validation Approach: Leave-one-out cross-validation to measure ranking effective
 Metric Calculation:
 - Precision @K: Percentage of top-K threats that match CISA critical incidents
 - Recall @K: Percentage of CISA incidents captured in top-K threats
-Caveat: Small ground truth (12 incidents) may lead to optimistic precision estimates. Results should be validated against larger incident databases in production deployment.
+- Caveat: Small ground truth (12 incidents) may lead to optimistic precision estimates. Results should be validated against larger incident databases in production deployment.
 
 ### Baseline Comparison (Top-50)
 
