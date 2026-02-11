@@ -461,7 +461,7 @@ with tab4:
     with col2:
         st.markdown(f"""
         *Dataset:*
-        - Total threats analyzed: {len(df)}
+        - Total threats analyzed: 430
         - Unique threats (post-dedup): {len(df)}
         - Date range: {df['created_date'].min().strftime('%Y-%m-%d')} to {df['created_date'].max().strftime('%Y-%m-%d')}
         - Data source: AlienVault OTX
