@@ -78,6 +78,19 @@ streamlit run src/dashboard/app.py
 mlflow ui
 # Then open http://localhost:5000
 
+## 🌐 Live Demo
+
+**Try it here**: [https://cyber-threat-prioritization.streamlit.app](https://cyber-threat-prioritization.streamlit.app)
+
+## 📊 Datasets
+
+### Primary Dataset
+- *AlienVault OTX*: 430 high-quality threat pulses (filtered by description length and relevant tags)
+
+### Auxiliary Datasets
+- *CISA Critical Incidents*: 12 verified critical advisories (ground truth for similarity scoring)
+- *MITRE ATT&CK Framework*: Technique keywords for pattern matching
+
 ## 📁 Project Structure
 
 cyber-threat-prioritization/
@@ -102,7 +115,7 @@ cyber-threat-prioritization/
 ### 1. Data Collection
 - Fetches threat intelligence from *AlienVault OTX* API
 - Applies quality filters (description length, relevant tags)
-- Collected 428 high-quality threats
+- Collected 430 high-quality threats
 
 ### 2. ML Pipeline
 
@@ -195,7 +208,6 @@ pytest tests/test_risk_scoring.py -v
 ## ⚠️ Limitations
 
 - *Static Dataset*: Snapshot from OTX (not live feed)
-- *Equal Weights*: Not optimized for specific environments
 - *Small Ground Truth*: Only 12 CISA incidents for similarity scoring
 - *No Temporal Modeling*: Doesn't track threat evolution over time
 
